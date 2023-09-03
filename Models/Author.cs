@@ -4,7 +4,6 @@
     {
         public string Name { get; set; }
         public string Salt { get; set; }
-
         public AuthorRole Role { get; set; }
     }
 
