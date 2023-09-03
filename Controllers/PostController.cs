@@ -26,7 +26,10 @@ namespace Blog.API.Controllers
         }
 
         [HttpPost("search")]
-        public async Task<IActionResult> Search([FromQuery] string status, [FromQuery] long page = 1, [FromQuery] long size = 20)
+        public async Task<IActionResult> Search(
+            [FromQuery] string status, 
+            [FromQuery] long page = 1, 
+            [FromQuery] long size = 20)
         {
 
             return Ok();

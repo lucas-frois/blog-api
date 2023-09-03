@@ -4,16 +4,18 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Blog.API.Repositories.TypeConfigurations
 {
-    public class AuthorConfiguration : IEntityTypeConfiguration<Author>
+    public class AuthorConfiguration : IEntityTypeConfiguration<User>
     {
-        public void Configure(EntityTypeBuilder<Author> builder)
+        public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.ToTable(nameof(Author));
+            builder.ToTable(nameof(User));
 
             builder.Property(post => post.Id).UseIdentityColumn();
             builder.Property(post => post.Name).HasColumnType("varchar(50)");
             builder.Property(post => post.Salt).HasColumnType("varchar(256)");
             builder.Property(post => post.Role).HasColumnType("bit(1)");
+
+            builder.HasMany(user => user.Posts)
         }
     }
 }

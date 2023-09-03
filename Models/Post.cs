@@ -4,16 +4,28 @@ namespace Blog.API.Models
 {
     public class Post : BaseEntity
     {
+        public Post()
+        {
+            Status = PostStatusEnum.Created;
+        }
+
         public string Title { get; set; }
         public string Content { get; set; }
-        public PostStatus Status { get; set; } = PostStatus.Pending;
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public PostStatusEnum Status { get; set; }
+
+        /// <summary>
+        /// EF relationship fields
+        /// </summary>
+        public long AuthorId { get; set; }
+        public User Author { get; set; }
+        public ICollection<Comment> Comments { get; set; }
     }
 
-    public enum PostStatus
+    public enum PostStatusEnum
     {
-        Pending = 1, 
-        Approved = 2, 
-        Rejected = 3
+        Created = 1, 
+        Submitted = 2, 
+        Published = 3, 
+        Rejected = 4
     }
 }

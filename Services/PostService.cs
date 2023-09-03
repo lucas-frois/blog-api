@@ -42,12 +42,12 @@ namespace Blog.API.Services
         {
             var post = postRepository.GetById(postId);
 
-            if(post is null || post.Status != PostStatus.Pending)
+            if(post is null || post.Status != PostStatusEnum.Pending)
             {
                 throw new Exception();
             }
 
-            post.Status = approved ? PostStatus.Approved : PostStatus.Rejected;
+            post.Status = approved ? PostStatusEnum.Approved : PostStatusEnum.Rejected;
 
             postRepository.Update(post);
         }
@@ -61,7 +61,7 @@ namespace Blog.API.Services
                 throw new Exception();
             }
 
-            if(existingPost.Status == PostStatus.Pending)
+            if(existingPost.Status == PostStatusEnum.Pending)
             {
                 throw new Exception();
             }
