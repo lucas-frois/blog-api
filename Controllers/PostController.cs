@@ -25,9 +25,19 @@ namespace Blog.API.Controllers
             return Ok(posts);
         }
 
-        [HttpPost("search")]
-        public async Task<IActionResult> Search(
-            [FromQuery] string status, 
+        [HttpGet("~/api/writers/posts")]
+        public async Task<IActionResult> GetFromWriter(
+            [FromQuery] int page = 1,
+            [FromQuery] int size = 20)
+        {
+            var posts = await postService.GetAll(page, size);
+
+            return Ok(posts);
+        }
+
+
+        [HttpGet("pending")]
+        public async Task<IActionResult> SearchPending(
             [FromQuery] long page = 1, 
             [FromQuery] long size = 20)
         {
@@ -51,18 +61,22 @@ namespace Blog.API.Controllers
             return Ok();
         }
 
+        [HttpPatch("{postId:long}/submit")]
+        public async Task<IActionResult> Submit([FromRoute] long postId)
+        {
+            return Ok();
+        }
 
         [HttpPatch("{postId:long}/approve")]
         public async Task<IActionResult> ApprovePostReview([FromRoute] long postId)
         {
-
             await postService.Review(postId, approved: true);
 
             return Ok();
         }
 
         [HttpPatch("{postId:long}/reject")]
-        public async Task<IActionResult> RejectPostReview([FromRoute] long postId)
+        public async Task<IActionResult> RejectPostReview([FromRoute] long postId, [FromBody] PostDenyDto postDenyDto)
         {
             await postService.Review(postId, approved: false);
 
