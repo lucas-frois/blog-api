@@ -19,11 +19,12 @@ namespace Blog.API
 
             services.AddDbContextPool<BlogContext>(options =>
             {
-
                 if (isProductionEnv)
                 {
                     var connectionString = configuration.GetConnectionString("connstr");
                     options.UseSqlServer(connectionString);
+                    
+                    return;
                 }
 
                 options.UseInMemoryDatabase("inmemoryconnstr");

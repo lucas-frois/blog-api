@@ -40,7 +40,7 @@ namespace Blog.API.Controllers
             return NoContent();
         }
 
-        [HttpPut("postId")]
+        [HttpPut("{postId:long}")]
         public async Task<IActionResult> Update([FromRoute] long postId, [FromBody] PostDto postDto)
         {
             await postService.Update(postId, postDto);
@@ -49,7 +49,7 @@ namespace Blog.API.Controllers
         }
 
 
-        [HttpPatch("{postId:int}/approve")]
+        [HttpPatch("{postId:long}/approve")]
         public async Task<IActionResult> ApprovePostReview([FromRoute] long postId)
         {
 
@@ -58,7 +58,7 @@ namespace Blog.API.Controllers
             return Ok();
         }
 
-        [HttpPatch("{postId:int}/reject")]
+        [HttpPatch("{postId:long}/reject")]
         public async Task<IActionResult> RejectPostReview([FromRoute] long postId)
         {
             await postService.Review(postId, approved: false);
