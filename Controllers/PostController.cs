@@ -25,12 +25,45 @@ namespace Blog.API.Controllers
             return Ok(posts);
         }
 
+        [HttpPost("search")]
+        public async Task<IActionResult> Search([FromQuery] string status, [FromQuery] long page = 1, [FromQuery] long size = 20)
+        {
+
+            return Ok();
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PostDto postDto)
         {
             await postService.Create(postDto);
 
             return NoContent();
+        }
+
+        [HttpPut("postId")]
+        public async Task<IActionResult> Update([FromRoute] long postId, [FromBody] PostDto postDto)
+        {
+            await postService.Update(postId, postDto);
+
+            return Ok();
+        }
+
+
+        [HttpPatch("{postId:int}/approve")]
+        public async Task<IActionResult> ApprovePostReview([FromRoute] long postId)
+        {
+
+            await postService.Review(postId, approved: true);
+
+            return Ok();
+        }
+
+        [HttpPatch("{postId:int}/reject")]
+        public async Task<IActionResult> RejectPostReview([FromRoute] long postId)
+        {
+            await postService.Review(postId, approved: false);
+
+            return Ok();
         }
     }
 }

@@ -20,8 +20,10 @@ namespace Blog.API.Mappers
         {
             var postDto = new PostDto
             {
+                Id = post.Id,
                 Title = post.Title,
                 Content = post.Content,
+                Status = Enum.GetName(typeof(PostStatus), post.Status) ?? "unknown"
             };
 
             return postDto;
