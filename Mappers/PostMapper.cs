@@ -5,7 +5,7 @@ namespace Blog.API.Mappers
 {
     public static class PostMapper
     {
-        public static Post ToEntity(this PostDto postDto)
+        public static Post ToEntity(this CreatePostDto postDto)
         {
             var post = new Post
             {

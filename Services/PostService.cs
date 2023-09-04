@@ -7,10 +7,10 @@ namespace Blog.API.Services
 {
     public interface IPostService
     {
-        Task Create(PostDto postDto);
+        Task Create(CreatePostDto createPostDto);
         Task<IList<PostDto>> GetAll(int page, int size);
         Task Review(long postId, bool approved);
-        Task Update(long postId, PostDto postDto);
+        Task Update(long postId, UpdatePostDto updatePostDto);
     }
 
     public class PostService : IPostService
@@ -22,7 +22,7 @@ namespace Blog.API.Services
             this.postRepository = postRepository;
         }
 
-        public async Task Create(PostDto postDto)
+        public async Task Create(CreatePostDto postDto)
         {
             var post = PostMapper.ToEntity(postDto);
 
@@ -52,7 +52,7 @@ namespace Blog.API.Services
             postRepository.Update(post);
         }
 
-        public async Task Update(long postId, PostDto postDto)
+        public async Task Update(long postId, UpdatePostDto postDto)
         {
             var existingPost = postRepository.GetById(postId);
 
@@ -61,7 +61,7 @@ namespace Blog.API.Services
                 throw new Exception();
             }
 
-            if(existingPost.Status == PostStatusEnum.Submitted)
+            if(existingPost.Status == PostStatusEnum.Submitted || existingPost.Status == PostStatusEnum.Published)
             {
                 throw new Exception();
             }

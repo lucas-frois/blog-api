@@ -53,18 +53,18 @@ namespace Blog.API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "writer")]
-        public async Task<IActionResult> Create([FromBody] PostDto postDto)
+        public async Task<IActionResult> Create([FromBody] CreatePostDto createPostDto)
         {
-            await postService.Create(postDto);
+            await postService.Create(createPostDto);
 
             return NoContent();
         }
 
         [HttpPut("{postId:long}")]
         [Authorize(Roles = "writer")]
-        public async Task<IActionResult> Update([FromRoute] long postId, [FromBody] PostDto postDto)
+        public async Task<IActionResult> Update([FromRoute] long postId, [FromBody] UpdatePostDto updatePostDto)
         {
-            await postService.Update(postId, postDto);
+            await postService.Update(postId, updatePostDto);
 
             return Ok();
         }
