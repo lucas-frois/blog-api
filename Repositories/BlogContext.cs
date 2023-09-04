@@ -7,7 +7,7 @@ namespace Blog.API.Repositories
     {
         public BlogContext(DbContextOptions<BlogContext> options) : base(options) { }
         public DbSet<Post> Posts { get; set; }
-        public DbSet<User> Authors { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

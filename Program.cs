@@ -1,7 +1,13 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 namespace Blog.API
 {
     public class Program
     {
+        public static string JwtSecret;
 
         public static void Main(string[] args)
         {
@@ -16,9 +22,28 @@ namespace Blog.API
 
             var configuration = builder.Configuration;
 
+            JwtSecret = configuration.GetValue<string>("JwtSecret");
+            var key = Encoding.ASCII.GetBytes(JwtSecret);
+            builder.Services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
             builder.Services.ConfigureDatabase(configuration);
             builder.Services.RegisterServices();
-
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -30,8 +55,8 @@ namespace Blog.API
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 

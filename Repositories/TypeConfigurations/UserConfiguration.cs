@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Blog.API.Repositories.TypeConfigurations
 {
-    public class AuthorConfiguration : IEntityTypeConfiguration<User>
+    public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
@@ -15,7 +15,7 @@ namespace Blog.API.Repositories.TypeConfigurations
             builder.Property(post => post.Salt).HasColumnType("varchar(256)");
             builder.Property(post => post.Role).HasColumnType("bit(1)");
 
-            builder.HasMany(user => user.Posts)
+            builder.HasMany(user => user.Posts);
         }
     }
 }
