@@ -51,7 +51,7 @@ namespace Blog.API.Services
                 Name = name,
                 Email = email,
                 Salt = salt, 
-                Role = roleEnum
+                Role = role
             };
 
             userRepository.Insert(user);

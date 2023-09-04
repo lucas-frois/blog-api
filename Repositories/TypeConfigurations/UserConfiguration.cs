@@ -13,7 +13,7 @@ namespace Blog.API.Repositories.TypeConfigurations
             builder.Property(post => post.Id).UseIdentityColumn();
             builder.Property(post => post.Name).HasColumnType("varchar(50)");
             builder.Property(post => post.Salt).HasColumnType("varchar(256)");
-            builder.Property(post => post.Role).HasColumnType("bit(1)");
+            builder.Property(post => post.RoleEnum).HasColumnType("bit(1)");
 
             builder.HasMany(user => user.Posts);
         }

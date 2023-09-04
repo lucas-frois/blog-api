@@ -1,4 +1,6 @@
-﻿namespace Blog.API.Models
+﻿using Microsoft.Extensions.Hosting;
+
+namespace Blog.API.Models
 {
     public class User : BaseEntity
     {
@@ -6,7 +8,8 @@
         public string Name { get; set; }
         public byte[] Salt { get; set; }
         public string PasswordHash { get; set; }
-        public UserRole Role { get; set; }
+        public string Role { get; set; }
+        public UserRole RoleEnum => (UserRole) Enum.Parse(typeof(UserRole), Role);
 
         /// <summary>
         /// EF relationship fields
