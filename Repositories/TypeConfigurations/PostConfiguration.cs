@@ -13,10 +13,12 @@ namespace Blog.API.Repositories.TypeConfigurations
             builder.Property(post => post.Id).UseIdentityColumn();
             builder.Property(post => post.Title).HasColumnType("varchar(50)");
             builder.Property(post => post.Content).HasColumnType("nvarchar(max)");
-            builder.Property(post => post.StatusEnum).HasColumnType("bit(1)");
+            builder.Property(post => post.Status).HasColumnType("varchar(10)");
             builder.Property(post => post.CreatedAt).HasColumnType("datetime");
 
             builder.HasMany(post => post.Comments);
+            builder.Ignore(post => post.PostStatusEnum);
+            builder.Navigation(post => post.Comments).AutoInclude();
 
         }
     }

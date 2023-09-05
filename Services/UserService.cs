@@ -8,6 +8,7 @@ namespace Blog.API.Services
         Task Create(string name, string email, string password, string role);
         Task<string> Authenticate(string email, string password);
         Task<User> GetUser(long userId);
+        Task<User> GetUserByEmail(string email);
     }
 
     public class UserService : IUserService
@@ -23,7 +24,9 @@ namespace Blog.API.Services
         {
             var hash = EncryptionService.HashPasword(password, out var salt);
 
-            if (!Enum.TryParse(role, out UserRole roleEnum))
+            role = role.ToUpper();
+
+            if (!Enum.TryParse(role, out UserRoleEnum roleEnum))
             {
                 throw new Exception();
             }
@@ -64,6 +67,11 @@ namespace Blog.API.Services
         public async Task<User> GetUser(long userId)
         {
             return userRepository.GetById(userId);
+        }
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            return userRepository.GetByCondition(user => user.Email == email);
         }
     }
 }

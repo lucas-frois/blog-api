@@ -15,6 +15,7 @@ namespace Blog.API.Repositories.TypeConfigurations
             builder.Property(comment => comment.CreatedAt).HasColumnType("datetime");
 
             builder.HasOne(comment => comment.Post);
+            builder.Ignore(comment => comment.IsVisibleOnlyToWriter);
         }
     }
 }

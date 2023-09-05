@@ -12,7 +12,7 @@ namespace Blog.API.Models
         public string Title { get; set; }
         public string Content { get; set; }
         public string Status { get; set; }
-        public PostStatusEnum StatusEnum => (PostStatusEnum) Enum.Parse(typeof(PostStatusEnum), Status);
+        public PostStatusEnum PostStatusEnum => (PostStatusEnum) Enum.Parse(typeof(PostStatusEnum), Status);
 
         /// <summary>
         /// EF relationship fields
@@ -24,9 +24,9 @@ namespace Blog.API.Models
 
     public enum PostStatusEnum
     {
-        Created = 1, 
-        Submitted = 2, 
-        Published = 3, 
-        Rejected = 4
+        CREATED, 
+        SUBMITTED, 
+        PUBLISHED, 
+        REJECTED
     }
 }

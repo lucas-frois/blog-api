@@ -22,9 +22,9 @@ namespace Blog.API.Controllers
             [FromRoute] long postId, 
             [FromBody] CreateCommentDto createCommentDto)
         {
-            long userId = 0;
+            var email = User.Identity.Name;
 
-            await postService.AddComment(userId, postId, createCommentDto.Content);
+            await postService.AddComment(email, postId, createCommentDto.Content);
 
             return NoContent();
         }

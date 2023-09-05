@@ -9,7 +9,7 @@ namespace Blog.API.Models
         public byte[] Salt { get; set; }
         public string PasswordHash { get; set; }
         public string Role { get; set; }
-        public UserRole RoleEnum => (UserRole) Enum.Parse(typeof(UserRole), Role);
+        public UserRoleEnum UserRoleEnum => (UserRoleEnum) Enum.Parse(typeof(UserRoleEnum), Role);
 
         /// <summary>
         /// EF relationship fields
@@ -18,10 +18,10 @@ namespace Blog.API.Models
         public ICollection<Comment> Comments { get; set; }
     }
 
-    public enum UserRole
+    public enum UserRoleEnum
     {
-        Viewer = 1, 
-        Writer = 2, 
-        Editor = 3
+        VIEWER, 
+        WRITER, 
+        EDITOR
     }
 }

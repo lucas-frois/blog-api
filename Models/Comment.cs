@@ -3,7 +3,7 @@
     public class Comment : BaseEntity
     {
         public string Content { get; set; }
-        public bool IsVisibleOnlyToWriter => User.RoleEnum == UserRole.Editor;
+        public bool IsVisibleOnlyToWriter => User.UserRoleEnum == UserRoleEnum.EDITOR;
 
         /// <summary>
         /// EF relationship fields

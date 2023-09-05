@@ -23,7 +23,19 @@ namespace Blog.API.Mappers
                 Id = post.Id,
                 Title = post.Title,
                 Content = post.Content,
-                Status = Enum.GetName(typeof(PostStatusEnum), post.StatusEnum) ?? "unknown"
+                Status = Enum.GetName(typeof(PostStatusEnum), post.PostStatusEnum) ?? "unknown", 
+                Author = new UserDto
+                {
+                    Name = post.User.Name,
+                },
+                Comments = post.Comments.Select(c => new CommentDto 
+                {
+                    Content = c.Content, 
+                    Author = new UserDto
+                    {
+                        Name = c.User.Name,
+                    }
+                }).ToList(),
             };
 
             return postDto;

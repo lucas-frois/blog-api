@@ -8,13 +8,13 @@ namespace Blog.API.Services
     public interface IPostService
     {
         Task<IList<PostDto>> GetAll(int page, int size);
-        Task<IList<PostDto>> GetFromWriter(string? email, int page, int size);
+        Task<IList<PostDto>> GetFromWriter(string email, int page, int size);
         Task<IList<PostDto>> SearchByStatus(PostStatusEnum postStatusEnum, int page, int size);
-        Task Create(CreatePostDto createPostDto);
+        Task Create(CreatePostDto createPostDto, string email);
         Task Update(long postId, UpdatePostDto updatePostDto);
         Task Submit(long postId);
         Task Review(long postId, bool approved);
-        Task AddComment(long userId, long postId, string content);
+        Task AddComment(string email, long postId, string content);
     }
 
     public class PostService : IPostService
@@ -37,24 +37,36 @@ namespace Blog.API.Services
             return postDtos;
         }
 
-        public async Task<IList<PostDto>> GetFromWriter(string? email, int page, int size)
+        public async Task<IList<PostDto>> GetFromWriter(string email, int page, int size)
         {
-            throw new NotImplementedException();
+            var user = await userService.GetUserByEmail(email);
+
+            if (user is null)
+            {
+                throw new Exception();
+            }
+
+            var posts = postRepository.SearchByCondition(post => post.UserId == user.Id, page, size);
+
+            return posts.Select(post => post.ToDto()).ToList();
         }
 
 
         public async Task<IList<PostDto>> SearchByStatus(PostStatusEnum postStatusEnum, int page, int size)
         {
-            var postStatus = postStatusEnum.ToString();
+            var postStatus = postStatusEnum.ToString().ToUpper();
 
             var posts = postRepository.SearchByCondition(post => post.Status == postStatus, page, size);
 
             return posts.Select(post => post.ToDto()).ToList();
         }
 
-        public async Task Create(CreatePostDto postDto)
+        public async Task Create(CreatePostDto postDto, string email)
         {
+            var user = await userService.GetUserByEmail(email);
             var post = PostMapper.ToEntity(postDto);
+
+            post.UserId = user.Id;
 
             postRepository.Insert(post);
         }
@@ -68,7 +80,7 @@ namespace Blog.API.Services
                 throw new Exception();
             }
 
-            if (existingPost.StatusEnum == PostStatusEnum.Submitted || existingPost.StatusEnum == PostStatusEnum.Published)
+            if (existingPost.PostStatusEnum == PostStatusEnum.SUBMITTED || existingPost.PostStatusEnum == PostStatusEnum.PUBLISHED)
             {
                 throw new Exception();
             }
@@ -88,12 +100,12 @@ namespace Blog.API.Services
                 throw new Exception();
             }
 
-            if (post.StatusEnum != PostStatusEnum.Created)
+            if (post.PostStatusEnum != PostStatusEnum.CREATED)
             {
                 throw new Exception();
             }
 
-            post.Status = PostStatusEnum.Submitted.ToString();
+            post.Status = PostStatusEnum.SUBMITTED.ToString();
 
             postRepository.Update(post);
         }
@@ -107,19 +119,19 @@ namespace Blog.API.Services
                 throw new Exception();
             }
 
-            if (post.StatusEnum != PostStatusEnum.Submitted)
+            if (post.PostStatusEnum != PostStatusEnum.SUBMITTED)
             {
                 throw new Exception();
             }
 
-            post.Status = (approved ? PostStatusEnum.Published : PostStatusEnum.Rejected).ToString();
+            post.Status = (approved ? PostStatusEnum.PUBLISHED : PostStatusEnum.REJECTED).ToString();
 
             postRepository.Update(post);
         }
 
-        public async Task AddComment(long userId, long postId, string content)
+        public async Task AddComment(string email, long postId, string content)
         {
-            var commentUser = await userService.GetUser(userId);
+            var commentUser = await userService.GetUserByEmail(email);
 
             if (commentUser == null)
             {
@@ -132,6 +144,8 @@ namespace Blog.API.Services
             {
                 throw new Exception();
             }
+
+            post.Comments = post.Comments == null ? new List<Comment>() : post.Comments;
 
             post.Comments.Add(new Comment
             {

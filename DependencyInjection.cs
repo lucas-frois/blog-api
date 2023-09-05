@@ -8,7 +8,9 @@ namespace Blog.API
     {
         public static void RegisterServices(this IServiceCollection services)
         {
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPostRepository, PostRepository>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IPostService, PostService>();
         }
 

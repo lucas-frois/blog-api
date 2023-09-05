@@ -29,12 +29,12 @@ namespace Blog.API.Controllers
         }
 
         [HttpGet("~/api/writers/posts")]
-        [Authorize(Roles = "writer")]
+        [Authorize(Roles = "WRITER")]
         public async Task<IActionResult> GetFromWriter(
             [FromQuery] int page = 1,
             [FromQuery] int size = 20)
         {
-            var email = User.Identity.Name;
+            var email = User.Identity.Name; // I know that isnt the best alternative but...
 
             var posts = await postService.GetFromWriter(email, page, size);
 
@@ -43,27 +43,29 @@ namespace Blog.API.Controllers
 
 
         [HttpGet("pending")]
-        [Authorize(Roles = "editor")]
+        [Authorize(Roles = "EDITOR")]
         public async Task<IActionResult> SearchPending(
             [FromQuery] int page = 1, 
             [FromQuery] int size = 20)
         {
-            var posts = await postService.SearchByStatus(PostStatusEnum.Submitted, page, size);
+            var posts = await postService.SearchByStatus(PostStatusEnum.SUBMITTED, page, size);
 
             return Ok(posts);
         }
 
         [HttpPost]
-        [Authorize(Roles = "writer")]
+        [Authorize(Roles = "WRITER")]
         public async Task<IActionResult> Create([FromBody] CreatePostDto createPostDto)
         {
-            await postService.Create(createPostDto);
+            var email = User.Identity.Name;
+
+            await postService.Create(createPostDto, email);
 
             return NoContent();
         }
 
         [HttpPut("{postId:long}")]
-        [Authorize(Roles = "writer")]
+        [Authorize(Roles = "WRITER")]
         public async Task<IActionResult> Update([FromRoute] long postId, [FromBody] UpdatePostDto updatePostDto)
         {
             await postService.Update(postId, updatePostDto);
@@ -72,7 +74,7 @@ namespace Blog.API.Controllers
         }
 
         [HttpPatch("{postId:long}/submit")]
-        [Authorize(Roles = "writer")]
+        [Authorize(Roles = "WRITER")]
         public async Task<IActionResult> Submit([FromRoute] long postId)
         {
             await postService.Submit(postId);
@@ -81,7 +83,7 @@ namespace Blog.API.Controllers
         }
 
         [HttpPatch("{postId:long}/approve")]
-        [Authorize(Roles = "editor")]
+        [Authorize(Roles = "EDITOR")]
         public async Task<IActionResult> ApprovePostReview([FromRoute] long postId)
         {
             await postService.Review(postId, approved: true);
@@ -90,7 +92,7 @@ namespace Blog.API.Controllers
         }
 
         [HttpPatch("{postId:long}/reject")]
-        [Authorize(Roles = "editor")]
+        [Authorize(Roles = "EDITOR")]
         public async Task<IActionResult> RejectPostReview([FromRoute] long postId, [FromBody] PostDenyDto postDenyDto)
         {
             await postService.Review(postId, approved: false);
