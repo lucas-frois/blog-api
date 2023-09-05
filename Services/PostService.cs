@@ -7,6 +7,7 @@ namespace Blog.API.Services
 {
     public interface IPostService
     {
+        Task AddComment(long userId, long postId, string content);
         Task Create(CreatePostDto createPostDto);
         Task<IList<PostDto>> GetAll(int page, int size);
         Task Review(long postId, bool approved);
@@ -15,11 +16,38 @@ namespace Blog.API.Services
 
     public class PostService : IPostService
     {
+        private readonly IUserService userService;
         private readonly IPostRepository postRepository;
 
-        public PostService(IPostRepository postRepository)
+        public PostService(IUserService userService,IPostRepository postRepository)
         {
+            this.userService = userService;
             this.postRepository = postRepository;
+        }
+
+        public async Task AddComment(long userId, long postId, string content)
+        {
+            var commentAuthor = await userService.GetUser(userId);
+
+            if(commentAuthor == null)
+            {
+                throw new Exception();
+            }
+
+            var post = postRepository.GetById(postId);
+
+            if(post == null)
+            {
+                throw new Exception();
+            }
+
+            post.Comments.Add(new Comment 
+            { 
+                Author = commentAuthor,
+                Content = content
+            });
+
+            postRepository.Update(post);
         }
 
         public async Task Create(CreatePostDto postDto)

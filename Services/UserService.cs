@@ -7,6 +7,7 @@ namespace Blog.API.Services
     {
         Task Authenticate(string email, string password);
         Task Create(string name, string email, string password, string role);
+        Task<User> GetUser(long userId);
     }
 
     public class UserService : IUserService
@@ -55,6 +56,11 @@ namespace Blog.API.Services
             };
 
             userRepository.Insert(user);
+        }
+
+        public async Task<User> GetUser(long userId)
+        {
+            return userRepository.GetById(userId);
         }
     }
 }

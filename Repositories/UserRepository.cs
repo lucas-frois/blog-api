@@ -5,6 +5,7 @@ namespace Blog.API.Repositories
     public interface IUserRepository
     {
         User? GetByEmail(string email);
+        User? GetById(long userId);
         void Insert(User user);
     }
 
@@ -20,6 +21,11 @@ namespace Blog.API.Repositories
         public User? GetByEmail(string email)
         {
             return context.Users.FirstOrDefault(u => u.Email == email);
+        }
+
+        public User? GetById(long userId)
+        {
+            return context.Users.FirstOrDefault(user => user.Id == userId);
         }
 
         public void Insert(User user)

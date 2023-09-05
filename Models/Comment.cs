@@ -4,6 +4,7 @@
     {
         public string Content { get; set; }
         public User Author { get; set; }
+        public long AuthorId { get; set; }
         public bool IsVisibleOnlyToWriter => Author.RoleEnum == UserRole.Editor;
     }
 }

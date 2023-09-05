@@ -9,13 +9,24 @@ namespace Blog.API.Controllers
     [Route("api/posts/{postId}/comments")]
     public class CommentController : Controller
     {
+        private readonly IPostService postService;
+
+        public CommentController(IPostService postService)
+        {
+            this.postService = postService;
+        }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Create(
             [FromRoute] long postId, 
             [FromBody] CreateCommentDto createCommentDto)
         {
-            return Ok();
+            long userId = 0;
+
+            await postService.AddComment(userId, postId, createCommentDto.Content);
+
+            return NoContent();
         }
     }
 }
