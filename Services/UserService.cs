@@ -5,8 +5,8 @@ namespace Blog.API.Services
 {
     public interface IUserService
     {
-        Task Authenticate(string email, string password);
         Task Create(string name, string email, string password, string role);
+        Task<string> Authenticate(string email, string password);
         Task<User> GetUser(long userId);
     }
 
@@ -17,25 +17,6 @@ namespace Blog.API.Services
         public UserService(IUserRepository userRepository)
         {
             this.userRepository = userRepository;
-        }
-
-        public async Task Authenticate(string email, string password)
-        {
-            var user = userRepository.GetByEmail(email);
-
-            if (user == null)
-            {
-                throw new Exception();
-            }
-
-            
-            var isCorrectPassword = EncryptionService.VerifyPassword(password, user.PasswordHash, user.Salt);
-
-            if (!isCorrectPassword)
-            {
-                throw new Exception();
-            }
-
         }
 
         public async Task Create(string name, string email, string password, string role)
@@ -52,10 +33,32 @@ namespace Blog.API.Services
                 Name = name,
                 Email = email,
                 Salt = salt, 
+                PasswordHash = hash,
                 Role = role
             };
 
             userRepository.Insert(user);
+        }
+
+        public async Task<string> Authenticate(string email, string password)
+        {
+            var user = userRepository.GetByEmail(email);
+
+            if (user == null)
+            {
+                throw new Exception();
+            }
+
+            var isCorrectPassword = EncryptionService.VerifyPassword(password, user.PasswordHash, user.Salt);
+
+            if (!isCorrectPassword)
+            {
+                throw new Exception();
+            }
+
+            var token = EncryptionService.GenerateJwtToken(user);
+
+            return token;
         }
 
         public async Task<User> GetUser(long userId)

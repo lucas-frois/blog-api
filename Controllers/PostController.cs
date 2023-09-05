@@ -34,9 +34,9 @@ namespace Blog.API.Controllers
             [FromQuery] int page = 1,
             [FromQuery] int size = 20)
         {
-            //var user = User.Identity.Name;
+            var email = User.Identity.Name;
 
-            var posts = await postService.GetAll(page, size);
+            var posts = await postService.GetFromWriter(email, page, size);
 
             return Ok(posts);
         }
@@ -49,6 +49,7 @@ namespace Blog.API.Controllers
             [FromQuery] int size = 20)
         {
             var posts = await postService.SearchByStatus(PostStatusEnum.Submitted, page, size);
+
             return Ok(posts);
         }
 

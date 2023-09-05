@@ -17,8 +17,8 @@ namespace Blog.API.Models
         /// <summary>
         /// EF relationship fields
         /// </summary>
-        public long AuthorId { get; set; }
-        public User Author { get; set; }
+        public long UserId { get; set; }
+        public User User { get; set; }
         public ICollection<Comment> Comments { get; set; }
     }
 

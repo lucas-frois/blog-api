@@ -4,8 +4,8 @@ namespace Blog.API.Repositories
 {
     public interface IUserRepository
     {
-        User? GetByEmail(string email);
         User? GetById(long userId);
+        User? GetByEmail(string email);
         void Insert(User user);
     }
 

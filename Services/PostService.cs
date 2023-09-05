@@ -7,13 +7,14 @@ namespace Blog.API.Services
 {
     public interface IPostService
     {
-        Task AddComment(long userId, long postId, string content);
-        Task Create(CreatePostDto createPostDto);
         Task<IList<PostDto>> GetAll(int page, int size);
-        Task Review(long postId, bool approved);
+        Task<IList<PostDto>> GetFromWriter(string? email, int page, int size);
         Task<IList<PostDto>> SearchByStatus(PostStatusEnum postStatusEnum, int page, int size);
-        Task Submit(long postId);
+        Task Create(CreatePostDto createPostDto);
         Task Update(long postId, UpdatePostDto updatePostDto);
+        Task Submit(long postId);
+        Task Review(long postId, bool approved);
+        Task AddComment(long userId, long postId, string content);
     }
 
     public class PostService : IPostService
@@ -21,42 +22,10 @@ namespace Blog.API.Services
         private readonly IUserService userService;
         private readonly IPostRepository postRepository;
 
-        public PostService(IUserService userService,IPostRepository postRepository)
+        public PostService(IUserService userService, IPostRepository postRepository)
         {
             this.userService = userService;
             this.postRepository = postRepository;
-        }
-
-        public async Task AddComment(long userId, long postId, string content)
-        {
-            var commentAuthor = await userService.GetUser(userId);
-
-            if(commentAuthor == null)
-            {
-                throw new Exception();
-            }
-
-            var post = postRepository.GetById(postId);
-
-            if(post == null)
-            {
-                throw new Exception();
-            }
-
-            post.Comments.Add(new Comment 
-            { 
-                Author = commentAuthor,
-                Content = content
-            });
-
-            postRepository.Update(post);
-        }
-
-        public async Task Create(CreatePostDto postDto)
-        {
-            var post = PostMapper.ToEntity(postDto);
-
-            postRepository.Insert(post);
         }
 
         public async Task<IList<PostDto>> GetAll(int page, int size)
@@ -68,24 +37,11 @@ namespace Blog.API.Services
             return postDtos;
         }
 
-        public async Task Review(long postId, bool approved)
+        public async Task<IList<PostDto>> GetFromWriter(string? email, int page, int size)
         {
-            var post = postRepository.GetById(postId);
-
-            if(post is null)
-            {
-                throw new Exception();
-            }
-
-            if(post.StatusEnum != PostStatusEnum.Submitted)
-            {
-                throw new Exception();
-            }
-
-            post.Status = (approved ? PostStatusEnum.Published : PostStatusEnum.Rejected).ToString();
-
-            postRepository.Update(post);
+            throw new NotImplementedException();
         }
+
 
         public async Task<IList<PostDto>> SearchByStatus(PostStatusEnum postStatusEnum, int page, int size)
         {
@@ -96,16 +52,43 @@ namespace Blog.API.Services
             return posts.Select(post => post.ToDto()).ToList();
         }
 
-        public async Task Submit(long postId)
+        public async Task Create(CreatePostDto postDto)
         {
-            var post = postRepository.GetById(postId);
+            var post = PostMapper.ToEntity(postDto);
 
-            if(post == null)
+            postRepository.Insert(post);
+        }
+
+        public async Task Update(long postId, UpdatePostDto postDto)
+        {
+            var existingPost = postRepository.GetById(postId);
+
+            if (existingPost is null)
             {
                 throw new Exception();
             }
 
-            if(post.StatusEnum != PostStatusEnum.Created)
+            if (existingPost.StatusEnum == PostStatusEnum.Submitted || existingPost.StatusEnum == PostStatusEnum.Published)
+            {
+                throw new Exception();
+            }
+
+            existingPost.Title = postDto.Title;
+            existingPost.Content = postDto.Content;
+
+            postRepository.Update(existingPost);
+        }
+
+        public async Task Submit(long postId)
+        {
+            var post = postRepository.GetById(postId);
+
+            if (post == null)
+            {
+                throw new Exception();
+            }
+
+            if (post.StatusEnum != PostStatusEnum.Created)
             {
                 throw new Exception();
             }
@@ -115,24 +98,48 @@ namespace Blog.API.Services
             postRepository.Update(post);
         }
 
-        public async Task Update(long postId, UpdatePostDto postDto)
+        public async Task Review(long postId, bool approved)
         {
-            var existingPost = postRepository.GetById(postId);
+            var post = postRepository.GetById(postId);
 
-            if(existingPost is null)
+            if (post is null)
             {
                 throw new Exception();
             }
 
-            if(existingPost.StatusEnum == PostStatusEnum.Submitted || existingPost.StatusEnum == PostStatusEnum.Published)
+            if (post.StatusEnum != PostStatusEnum.Submitted)
             {
                 throw new Exception();
             }
 
-            existingPost.Title = postDto.Title;
-            existingPost.Content = postDto.Content;
+            post.Status = (approved ? PostStatusEnum.Published : PostStatusEnum.Rejected).ToString();
 
-            postRepository.Update(existingPost);
+            postRepository.Update(post);
+        }
+
+        public async Task AddComment(long userId, long postId, string content)
+        {
+            var commentUser = await userService.GetUser(userId);
+
+            if (commentUser == null)
+            {
+                throw new Exception();
+            }
+
+            var post = postRepository.GetById(postId);
+
+            if (post == null)
+            {
+                throw new Exception();
+            }
+
+            post.Comments.Add(new Comment
+            {
+                User = commentUser,
+                Content = content
+            });
+
+            postRepository.Update(post);
         }
     }
 }

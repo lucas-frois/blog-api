@@ -29,9 +29,9 @@ namespace Blog.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Authenticate([FromBody] AuthenticationDto authenticationDto)
         {
-            await userService.Authenticate(authenticationDto.Email, authenticationDto.Password);
+            var token = await userService.Authenticate(authenticationDto.Email, authenticationDto.Password);
 
-            return Ok();
+            return Ok(new { token = token });
         }
     }
 }
