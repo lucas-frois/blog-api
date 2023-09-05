@@ -23,7 +23,7 @@ namespace Blog.API.Mappers
                 Id = post.Id,
                 Title = post.Title,
                 Content = post.Content,
-                Status = Enum.GetName(typeof(PostStatusEnum), post.Status) ?? "unknown"
+                Status = Enum.GetName(typeof(PostStatusEnum), post.StatusEnum) ?? "unknown"
             };
 
             return postDto;

@@ -11,6 +11,8 @@ namespace Blog.API.Services
         Task Create(CreatePostDto createPostDto);
         Task<IList<PostDto>> GetAll(int page, int size);
         Task Review(long postId, bool approved);
+        Task<IList<PostDto>> SearchByStatus(PostStatusEnum postStatusEnum, int page, int size);
+        Task Submit(long postId);
         Task Update(long postId, UpdatePostDto updatePostDto);
     }
 
@@ -70,12 +72,45 @@ namespace Blog.API.Services
         {
             var post = postRepository.GetById(postId);
 
-            if(post is null || post.Status != PostStatusEnum.Submitted)
+            if(post is null)
             {
                 throw new Exception();
             }
 
-            post.Status = approved ? PostStatusEnum.Published : PostStatusEnum.Rejected;
+            if(post.StatusEnum != PostStatusEnum.Submitted)
+            {
+                throw new Exception();
+            }
+
+            post.Status = (approved ? PostStatusEnum.Published : PostStatusEnum.Rejected).ToString();
+
+            postRepository.Update(post);
+        }
+
+        public async Task<IList<PostDto>> SearchByStatus(PostStatusEnum postStatusEnum, int page, int size)
+        {
+            var postStatus = postStatusEnum.ToString();
+
+            var posts = postRepository.GetByStatus(postStatus, page, size);
+
+            return posts.Select(post => post.ToDto()).ToList();
+        }
+
+        public async Task Submit(long postId)
+        {
+            var post = postRepository.GetById(postId);
+
+            if(post == null)
+            {
+                throw new Exception();
+            }
+
+            if(post.StatusEnum != PostStatusEnum.Created)
+            {
+                throw new Exception();
+            }
+
+            post.Status = PostStatusEnum.Submitted.ToString();
 
             postRepository.Update(post);
         }
@@ -89,7 +124,7 @@ namespace Blog.API.Services
                 throw new Exception();
             }
 
-            if(existingPost.Status == PostStatusEnum.Submitted || existingPost.Status == PostStatusEnum.Published)
+            if(existingPost.StatusEnum == PostStatusEnum.Submitted || existingPost.StatusEnum == PostStatusEnum.Published)
             {
                 throw new Exception();
             }

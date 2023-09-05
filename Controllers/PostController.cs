@@ -1,4 +1,5 @@
 ﻿using Blog.API.Dtos;
+using Blog.API.Models;
 using Blog.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -44,11 +45,11 @@ namespace Blog.API.Controllers
         [HttpGet("pending")]
         [Authorize(Roles = "editor")]
         public async Task<IActionResult> SearchPending(
-            [FromQuery] long page = 1, 
-            [FromQuery] long size = 20)
+            [FromQuery] int page = 1, 
+            [FromQuery] int size = 20)
         {
-
-            return Ok();
+            var posts = await postService.SearchByStatus(PostStatusEnum.Submitted, page, size);
+            return Ok(posts);
         }
 
         [HttpPost]
@@ -73,6 +74,8 @@ namespace Blog.API.Controllers
         [Authorize(Roles = "writer")]
         public async Task<IActionResult> Submit([FromRoute] long postId)
         {
+            await postService.Submit(postId);
+
             return Ok();
         }
 
