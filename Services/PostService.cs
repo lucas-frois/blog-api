@@ -47,7 +47,7 @@ namespace Blog.API.Services
         {
             var postStatus = postStatusEnum.ToString();
 
-            var posts = postRepository.GetByStatus(postStatus, page, size);
+            var posts = postRepository.SearchByCondition(post => post.Status == postStatus, page, size);
 
             return posts.Select(post => post.ToDto()).ToList();
         }

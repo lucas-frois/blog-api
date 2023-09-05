@@ -42,7 +42,7 @@ namespace Blog.API.Services
 
         public async Task<string> Authenticate(string email, string password)
         {
-            var user = userRepository.GetByEmail(email);
+            var user = userRepository.GetByCondition(user => user.Email == email);
 
             if (user == null)
             {
